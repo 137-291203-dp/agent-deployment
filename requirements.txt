@@ -1,0 +1,102 @@
+# Core Framework
+fastapi==0.118.2
+uvicorn[standard]==0.37.0
+pydantic==2.12.0
+pydantic-settings==2.11.0
+python-dotenv==1.1.1
+
+# LLM & AI
+langchain==0.3.27
+langchain-core==0.3.79
+langchain-google-genai==2.1.12
+langchain-openai==0.3.35
+langchain-chroma==0.2.6
+langchain-text-splitters==0.3.11
+openai==2.3.0
+google-ai-generativelanguage==0.7.0
+google-auth==2.41.1
+tiktoken==0.12.0
+
+# GitHub Integration
+pygithub==2.8.1
+gitpython==3.1.45
+
+# Database
+sqlalchemy==2.0.43
+asyncpg
+aiosqlite
+psycopg2-binary
+alembic
+
+# Vector Store & Embeddings
+chromadb==1.1.1
+numpy==2.2.6
+
+# Web Automation
+playwright==1.55.0
+
+# Code Analysis
+pyflakes==3.4.0
+tree-sitter==0.25.2
+tree-sitter-language-pack==0.10.0
+
+# HTTP & Networking
+httpx==0.28.1
+requests==2.32.5
+email-validator==2.3.0
+
+# Security
+cryptography==46.0.2
+pyjwt==2.10.1
+bcrypt==5.0.0
+
+# Logging & Monitoring
+colorlog==6.9.0
+structlog
+python-json-logger
+
+# Utilities
+pyyaml==6.0.3
+python-multipart
+aiofiles
+jinja2
+click==8.3.0
+undetected-chromedriver
+boto3
+azure-storage-blob
+google-cloud-storage
+minio
+docker
+kubernetes
+anthropic
+openai
+paramiko
+scp
+fabric
+invoke
+questionary
+inquirer
+prompt-toolkit
+pygments
+halo
+yaspin
+alive-progress
+pytest-html
+pytest-cov
+coverage
+bandit
+safety
+pre-commit
+black
+isort
+flake8
+mypy
+pylint
+autopep8
+pyupgrade
+chromadb
+tree-sitter
+tree-sitter-python
+tree-sitter-javascript
+tree-sitter-html
+tree-sitter-css
