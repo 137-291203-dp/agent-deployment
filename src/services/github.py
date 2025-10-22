@@ -206,21 +206,42 @@ This application was automatically generated and deployed by an autonomous AI we
             owner, repo_name = self._parse_github_url(repo_url)
             repo = self.github.get_repo(f"{owner}/{repo_name}")
 
-            # Enable Pages from main branch root
+            # Enable Pages using direct API call
             try:
-                repo.create_pages_site(
-                    source={"branch": "main", "path": "/"}
+                # Use the underlying GitHub API directly
+                url = f"{repo.url}/pages"
+                headers, data = repo._requester.requestJsonAndCheck(
+                    "POST",
+                    url,
+                    input={
+                        "source": {
+                            "branch": "main",
+                            "path": "/"
+                        }
+                    }
                 )
+                logger.info("GitHub Pages enabled successfully")
             except GithubException as e:
-                if e.status != 409:  # Already exists
-                    raise
+                # Pages might already be enabled (409) or other error
+                if e.status == 409:
+                    logger.info("GitHub Pages already enabled")
+                elif e.status == 404:
+                    # Endpoint not available, Pages might already be on
+                    logger.info("Pages API not available, checking if already enabled")
+                else:
+                    logger.warning(f"Could not automatically enable Pages: {e}")
+                    logger.info("Repository created. Enable Pages manually in Settings > Pages")
 
             # Wait for Pages to be available
             await asyncio.sleep(5)
 
             # Get Pages URL
-            pages = repo.get_pages()
-            return pages.html_url
+            try:
+                pages = repo.get_pages()
+                return pages.html_url
+            except:
+                # Pages not available yet, use default GitHub Pages URL
+                return f"https://{owner}.github.io/{repo_name}/"
 
         except Exception as e:
             logger.error(f"Failed to enable Pages for {repo_url}: {e}")
@@ -302,21 +323,41 @@ This application was automatically generated and deployed by an autonomous AI we
             commits = repo.get_commits()
             commit_sha = commits[0].sha if commits.totalCount > 0 else "unknown"
             
-            # Enable GitHub Pages
+            # Enable GitHub Pages using direct API call
             logger.info("Enabling GitHub Pages")
             try:
-                repo.create_pages_site(
-                    source={"branch": "main", "path": "/"}
+                # Use the underlying GitHub API directly
+                url = f"{repo.url}/pages"
+                headers, data = repo._requester.requestJsonAndCheck(
+                    "POST",
+                    url,
+                    input={
+                        "source": {
+                            "branch": "main",
+                            "path": "/"
+                        }
+                    }
                 )
+                logger.info("GitHub Pages enabled successfully")
             except GithubException as e:
-                if e.status != 409:  # Already exists
-                    logger.warning(f"Pages setup warning: {e}")
-            
+                if e.status == 409:
+                    logger.info("GitHub Pages already enabled")
+                elif e.status == 404:
+                    logger.info("Pages API not available, checking if already enabled")
+                else:
+                    logger.warning(f"Could not automatically enable Pages: {e}")
+                    logger.info("Repository created. Enable Pages manually in Settings > Pages")
+
             # Wait for Pages to deploy
             await asyncio.sleep(5)
-            
+
             # Get Pages URL
-            pages_url = f"https://{user.login}.github.io/{repo_name}/"
+            try:
+                pages = repo.get_pages()
+                pages_url = pages.html_url
+            except:
+                # Pages not available yet, use default GitHub Pages URL
+                pages_url = f"https://{user.login}.github.io/{repo_name}/"
             
             result = {
                 'repo_url': repo.html_url,

@@ -1,0 +1,20 @@
+{
+  "email": "",
+  "secret": "",
+  "nonce": "test-request-001",
+  "task": "expense-tracker",
+  "round": 1,
+  "brief": "Create a simple expense tracker web application with the following features: Add expenses with amount, category, and date. Display total expenses and breakdown by category. Show list of all expenses with ability to delete them. Filter expenses by date range. Use Chart.js for visualization. Store data in localStorage.",
+  "checks": [
+    "Add expense with amount, category, date",
+    "Display total expenses",
+    "Chart showing expenses by category using Chart.js",
+    "List of all expenses",
+    "Delete expenses functionality",
+    "Filter expenses by date range",
+    "Data persists in localStorage",
+    "Responsive design"
+  ],
+  "evaluation_url": "https://webhook.site/eea8c1f8-98f0-4e5e-8684-d9b14ab395ec",
+  "attachments": []
+}

@@ -260,13 +260,11 @@ class AnthropicProvider(BaseLLMProvider):
             if not self.client:
                 self.client = anthropic.AsyncAnthropic(api_key=self.api_key)
 
-            messages = []
-            if system_message:
-                messages.append({"role": "system", "content": system_message})
-            messages.append({"role": "user", "content": prompt})
+            messages = [{"role": "user", "content": prompt}]
 
             response = await self.client.messages.create(
-                model="claude-3-sonnet-20240229",
+                model="claude-3-5-sonnet-20241022",
+                system=system_message,
                 messages=messages,
                 max_tokens=max_tokens,
                 temperature=temperature
@@ -286,7 +284,7 @@ class GroqProvider(BaseLLMProvider):
     def __init__(self, api_key: str):
         self.api_key = api_key
         self.base_url = "https://api.groq.com/openai/v1"
-        self.model = "llama3-8b-8192"  # Fast, free model
+        self.model = "llama3.1-70b-versatile"  # Fast, free model
         self.client = None
 
     async def generate_response(
@@ -335,7 +333,7 @@ class HuggingFaceProvider(BaseLLMProvider):
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.model = "microsoft/DialoGPT-medium"  # Free conversational model
+        self.model = "facebook/blenderbot-400M-distill"  # Free conversational model
         self.client = None
 
     async def generate_response(
@@ -356,7 +354,7 @@ class HuggingFaceProvider(BaseLLMProvider):
             full_prompt = f"{system_message}\n\n{prompt}" if system_message else prompt
 
             response = await self.client.post(
-                f"https://api-inference.huggingface.co/models/{self.model}",
+                f"https://router.huggingface.co/hf-inference/models/{self.model}",
                 headers={
                     "Authorization": f"Bearer {self.api_key}",
                     "Content-Type": "application/json"

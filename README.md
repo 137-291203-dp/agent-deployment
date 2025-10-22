@@ -1,6 +1,6 @@
 # 🚀 Agent LLM Deployment System - Autonomous AI Web Developer
 
-A **Brahmacode-inspired** autonomous AI agent designed to build, deploy, and update complete web applications from natural language project briefs. Built with **FastAPI**, **SQLAlchemy 2.0**, and modern async patterns.
+An autonomous AI agent designed to build, deploy, and update complete web applications from natural language project briefs. Built with **FastAPI**, **SQLAlchemy 2.0**, and modern async patterns with comprehensive LLM provider support.
 
 ## ✨ Key Features
 
@@ -8,7 +8,9 @@ A **Brahmacode-inspired** autonomous AI agent designed to build, deploy, and upd
 - **🎯 Multi-Round Capability**: Round 1 (new projects) and Round 2+ (updates) with RAG-powered context
 - **🤖 Think-Plan-Act-Review Methodology**: Structured AI agent behavior for high-quality results
 - **🚀 Automated Deployment**: Creates GitHub repos and deploys to GitHub Pages automatically
-- **🔧 Multi-LLM Provider Support**: OpenAI, Anthropic, Gemini, Copilot with automatic failover
+- **🔧 Multi-LLM Provider Support**: OpenAI GPT-3.5/4, Anthropic Claude 3.5 Sonnet, Groq Llama 3.1, HuggingFace Inference with automatic failover
+- **🌐 GitHub Integration**: Automated repository creation, file deployment, and GitHub Pages setup
+- **🛠️ Robust Error Handling**: Comprehensive fallback mechanisms and graceful degradation
 - **📚 Interactive API Documentation**: Beautiful Swagger UI at `/docs`
 - **🐳 Production Ready**: Docker containerization with health checks
 - **📊 Comprehensive Monitoring**: Structured logging and observability
@@ -73,7 +75,7 @@ cp .env.example .env
 # Edit .env with your API keys
 # Required:
 # - GITHUB_TOKEN (with repo permissions)
-# - OPENAI_API_KEY or other LLM provider keys
+# - At least one LLM provider key (OpenAI, Anthropic, Groq, or HuggingFace)
 # - HF_TOKEN (Hugging Face for database sync)
 ```
 
@@ -147,23 +149,25 @@ GET /health
 
 ### Environment Variables
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `GITHUB_TOKEN` | GitHub Personal Access Token | ✅ |
-| `OPENAI_API_KEY` | OpenAI API Key | ⚠️* |
-| `ANTHROPIC_API_KEY` | Anthropic Claude API Key | ⚠️* |
-| `GEMINI_API_KEYS` | Google Gemini API Keys (comma-separated) | ⚠️* |
-| `HF_TOKEN` | Hugging Face Token | ✅ |
-| `DATABASE_ID` | Hugging Face Dataset ID | ✅ |
+| Variable | Description | Required | Model |
+|----------|-------------|----------|-------|
+| `GITHUB_TOKEN` | GitHub Personal Access Token | ✅ | - |
+| `OPENAI_API_KEY` | OpenAI API Key | ⚠️* | GPT-3.5/4 |
+| `ANTHROPIC_API_KEY` | Anthropic Claude API Key | ⚠️* | Claude 3.5 Sonnet |
+| `GROQ_API_KEY` | Groq API Key | ⚠️* | Llama 3.1 70B |
+| `HF_TOKEN` | Hugging Face Token (for database sync) | ✅ | - |
+| `DATABASE_ID` | Hugging Face Dataset ID | ✅ | - |
 
 *At least one LLM provider required
 
 ### Advanced Configuration
 
 ```bash
-# Multi-provider LLM setup
-GEMINI_API_KEYS=key1,key2,key3
-COPILOT_GITHUB_TOKEN=your-copilot-token
+# LLM Provider Configuration
+OPENAI_API_KEY=your-openai-key
+ANTHROPIC_API_KEY=your-anthropic-key
+GROQ_API_KEY=your-groq-key
+HUGGINGFACE_API_KEY=your-huggingface-key
 
 # Production settings
 DEPLOYMENT_ENV=production
@@ -182,11 +186,12 @@ The system uses a sophisticated AI agent that follows the **Think-Plan-Act-Revie
 
 ### Agent Capabilities
 
-- **Code Generation**: HTML, CSS, JavaScript generation
-- **File Management**: Workspace creation and file operations
-- **Git Integration**: Repository creation and deployment
-- **Quality Assurance**: Linting, validation, and testing
-- **Multi-round Updates**: Context-aware modifications
+- **Code Generation**: HTML, CSS, JavaScript generation with modern best practices
+- **File Management**: Automated workspace creation and file operations
+- **Git Integration**: Repository creation, file commits, and deployment automation
+- **Quality Assurance**: Code validation and error handling
+- **Multi-Provider Fallback**: Automatic failover between LLM providers
+- **Robust Deployment**: GitHub Pages integration with fallback mechanisms
 
 ## 🐳 Docker Deployment
 
@@ -260,13 +265,59 @@ flake8 src/
 mypy src/
 ```
 
-## 🚧 Roadmap
+## 🎉 Recent Improvements
+
+### LLM Provider Enhancements
+- **HuggingFace API Migration**: Updated from deprecated `api-inference.huggingface.co` to `router.huggingface.co/hf-inference`
+- **Anthropic API Fix**: Updated to use correct system message format for Claude 3.5 Sonnet
+- **Groq Model Update**: Migrated from deprecated models to current `llama3.1-70b-versatile`
+- **HuggingFace Model**: Updated to use `facebook/blenderbot-400M-distill` for reliable responses
+
+### GitHub Integration Improvements
+- **Token Permissions**: Fixed GitHub token requirements for repository creation
+- **Pages API**: Enhanced GitHub Pages deployment with proper error handling
+- **Repository Management**: Improved automated repository creation and file deployment
+
+### System Reliability
+- **Database Issues**: Resolved PostgreSQL constraint violations
+- **Error Handling**: Added comprehensive fallback mechanisms for all LLM providers
+- **API Compatibility**: Updated all providers to use current API endpoints and models
+
+## 🔧 Troubleshooting
+
+### Common Issues
+
+**GitHub Token Issues:**
+- Ensure your `GITHUB_TOKEN` has `repo` scope permissions
+- Token should start with `ghp_` (Personal Access Token) or `github_pat_` (Fine-grained token)
+
+**LLM Provider Issues:**
+- **OpenAI**: Use current API keys from platform.openai.com
+- **Anthropic**: Ensure API key is valid and has sufficient credits
+- **Groq**: Free tier available, get key from console.groq.com
+- **HuggingFace**: Get token from huggingface.co/settings/tokens
+
+**Database Issues:**
+- If you see constraint violations, clear the database: `docker-compose down && docker volume rm agent-llm-deployment_postgres_data && docker-compose up -d`
+
+**Docker Issues:**
+- Ensure ports 8000 (web), 5432 (db), 6379 (redis) are available
+- Check logs: `docker-compose logs -f`
+
+### Getting Help
+
+If you encounter issues:
+1. Check the logs: `docker-compose logs -f web`
+2. Verify environment variables in `.env` file
+3. Ensure all required API keys are properly configured
+4. Check that at least one LLM provider is working
+
+## 🚧 Future Roadmap
 
 - [ ] **Advanced RAG**: Vector-based code understanding for updates
 - [ ] **WebSocket Support**: Real-time progress updates
 - [ ] **Advanced Testing**: Browser automation and end-to-end tests
 - [ ] **Plugin System**: Extensible tool architecture
-- [ ] **Multi-tenancy**: Support for multiple organizations
 - [ ] **Web UI**: React dashboard for task management
 
 ## 📝 License
@@ -277,4 +328,4 @@ MIT License - see LICENSE file for details.
 
 **Built with ❤️ using FastAPI, SQLAlchemy 2.0, and the Think-Plan-Act-Review methodology**
 
-*Inspired by Brahmacode - Autonomous AI Web Developer*
+*Autonomous AI Web Developer*
